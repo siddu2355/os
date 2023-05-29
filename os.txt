@@ -1,0 +1,53 @@
+#include <iostream>
+
+#include <algorithm>
+
+using namespace std;
+struct Process {
+  int processId;
+  int burstTime;
+};
+bool compareByBurstTime(const Process & a,
+  const Process & b) {
+  return a.burstTime < b.burstTime;
+}
+void calculateTimes(Process processes[], int n) {
+  int waitingTime[n];
+  int turnaroundTime[n];
+  waitingTime[0] = 0;
+  for (int i = 1; i < n; i++) {
+    waitingTime[i] = processes[i - 1].burstTime + waitingTime[i - 1];
+    turnaroundTime[i] = processes[i].burstTime + waitingTime[i];
+  }
+  cout << "Process\tBurst Time\tWaiting Time\tTurnaround Time" << endl;
+  for (int i = 0; i < n; i++) {
+    cout << processes[i].processId << "\t\t" << processes[i].burstTime << "\t\t" <<
+      waitingTime[i] << "\t\t" << turnaroundTime[i] << endl;
+  }
+  double averageWaitingTime = 0;
+  double averageTurnaroundTime = 0;
+  for (int i = 0; i < n; i++) {
+    averageWaitingTime += waitingTime[i];
+    averageTurnaroundTime += turnaroundTime[i];
+  }
+  averageWaitingTime /= n;
+  averageTurnaroundTime /= n;
+  cout << "Average Waiting Time: " << averageWaitingTime << endl;
+  cout << "Average Turnaround Time: " << averageTurnaroundTime << endl;
+}
+int main() {
+  int n;
+  cout << "Enter the number of processes: ";
+  cin >> n;
+  Process processes[n];
+  cout << "Enter process IDs and burst times:" << endl;
+  for (int i = 0; i < n; i++) {
+    cout << "Process " << i + 1 << " ID: ";
+    cin >> processes[i].processId;
+    cout << "Burst Time: ";
+    cin >> processes[i].burstTime;
+  }
+  sort(processes, processes + n, compareByBurstTime);
+  calculateTimes(processes, n);
+  return 0;
+}
